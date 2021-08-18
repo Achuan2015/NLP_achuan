@@ -3,7 +3,7 @@
 手撸一遍。顺便顺理一遍一维卷积。
 
 ## 网络结构
-TODO
+[Convolutional Neural Networks for Sentence Classification](Convolutional Neural Networks for Sentence Classification)
 
 ## 一个构造一维卷积的输入与输出的列子
 ```

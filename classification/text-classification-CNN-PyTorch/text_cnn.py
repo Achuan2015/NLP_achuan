@@ -11,7 +11,7 @@ class TextCNN(nn.Module):
         self.embedding = nn.Embedding(config.vocab_size, config.embedding_size)
         self.convs = nn.ModuleList(
             [nn.Sequential(nn.Conv1d(256, config.feature_size, kernel_size=h),
-            nn.ReLU(),nn.MaxPool1d(config.max_text_len - h + 1)) for h in config.window_sizes]
+            nn.ReLU(),nn.MaxPool1d(config.max_seq_len - h + 1)) for h in config.window_sizes]
         )
         self.fc = nn.Linear(in_features=config.feature_size * len(config.window_sizes), out_features=config.num_classes)
     
@@ -26,7 +26,7 @@ class TextCNN(nn.Module):
 
 if __name__ == "__main__":
     model = TextCNN(config)
-    fake_inputs = torch.randint(0, config.vocab_size, (32, config.max_text_len))
+    fake_inputs = torch.randint(0, config.vocab_size, (32, config.max_seq_len))
     out = model(fake_inputs)
     print(out.shape)
         
