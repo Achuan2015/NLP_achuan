@@ -6,7 +6,6 @@ def train_fn(dataloader, model, device, optimizer, criterion):
     model.train()
     
     for i, data in tqdm(enumerate(dataloader),total=len(dataloader)):
-        print("bi", i)
         input, target = data[0].to(device), data[1].to(device)
         optimizer.zero_grad()
         output = model(input)
@@ -20,9 +19,9 @@ def eval_fn(dataloader, model, device):
     
     fin_outputs = []
     fin_targets = []
-    for bi, data in tqdm(enumerate(dataloader),total=len(dataloader)):
-        input, target = data[0].to(device), target.to(device)
+    for _, data in tqdm(enumerate(dataloader),total=len(dataloader)):
+        input, target = data[0].to(device), data[1].to(device)
         output = model(input)
-        fin_outputs.append(output)
-        fin_targets.append(target)
+        fin_outputs.extend(output.cpu().detach().numpy().tolist())
+        fin_targets.extend(target.view(-1).cpu().detach().numpy().tolist())
     return fin_outputs, fin_targets

@@ -9,6 +9,8 @@ import torch.nn as nn
 import torch.utils.data as Data
 import torch.nn.functional as F
 import pandas as pd
+import numpy as np
+from sklearn import metrics
 
 import config
 from utils import make_data
@@ -29,19 +31,31 @@ def run():
     sentences_train, labels_train = dfs_train['review_clean'].tolist(), dfs_train['label'].tolist()
 
     dfs_test = pd.read_csv("data/sentiment_test_2k.csv", sep="\t")
+    sentences_test, labels_test = dfs_test['review_clean'].tolist(), dfs_train['label'].tolist()
 
-    inputs_train, word2idx, idx2word = make_data(sentences_train)
+    inputs_train, word2idx = make_data(sentences_train)
+    inputs_test, word2idx = make_data(sentences_test, word2idx)
 
     dataset_train = SentimentDataset(inputs_train, labels_train)
     dataloader_train = Data.DataLoader(dataset_train, config.batch_size, True)
+
+    dataset_test = SentimentDataset(inputs_test, labels_test)
+    dataloader_test = Data.DataLoader(dataset_test, config.batch_size, True)
 
     model = TextCNN(config).to(device)
     optimizer = optim.Adam(model.parameters(), lr=10e-3)
     criterion = nn.CrossEntropyLoss().to(device)
 
+    best_accuracy = 0.75
     for epoch in range(config.num_epoch):
         train_fn(dataloader_train, model, device, optimizer, criterion)
-        # fin_outputs, fin_targets = eval_fn()
+        fin_outputs, fin_targets = eval_fn(dataloader_test, model, device)
+        output_indices = np.argmax(np.array(fin_outputs), axis=1)
+        accuracy = metrics.accuracy_score(output_indices, np.array(fin_targets))
+        print('accuracy: ', accuracy)
+        if accuracy > best_accuracy:
+            best_accuracy = accuracy
+            torch.save(model.state_dict(), config.model_path)
 
 
 if __name__ == "__main__":
