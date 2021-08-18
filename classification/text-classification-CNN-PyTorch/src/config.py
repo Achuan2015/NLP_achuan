@@ -1,8 +1,10 @@
-embedding_size=2
+embedding_size=200
 feature_size=100
 window_sizes=[3,4,5,6]
 max_seq_len=30
 dropout=0.1
-num_classes=2
-vocab_size=32500
-batch_size=3
+num_classes=3
+batch_size=32
+vocab_size=50000
+num_epoch=1
+model_path="sentiment_analyse_3.bin"

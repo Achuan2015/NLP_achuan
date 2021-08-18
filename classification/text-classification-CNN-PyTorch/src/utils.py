@@ -1,5 +1,6 @@
 import jieba
 
+
 stopwords = []
 
 
@@ -18,11 +19,10 @@ def make_data(sentences):
     vocab_list = " ".join(seg_sentences).split(" ")
     vocab = list(set(vocab_list))
     vocab_size = len(vocab)
-    word2idx = dict(zip(vocab, range(vocab_size)))
-    idx2word = dict(zip(range(vocab_size), vocab))
+    word2idx = dict(zip(vocab, range(1, vocab_size + 1)))
+    idx2word = dict(zip(range(1, vocab_size + 1), vocab))
 
     for sentence in seg_sentences:
         sent_ids = [word2idx[word] for word in sentence.split(" ")]
         inputs_id.append(sent_ids)
-    return inputs_id, word2idx, idx2word, vocab, vocab_size
-    
+    return inputs_id, word2idx, idx2word
