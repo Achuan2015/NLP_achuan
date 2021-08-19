@@ -45,10 +45,10 @@ def run():
     dataloader_test = Data.DataLoader(dataset_test, config.batch_size, True)
 
     model = TextCNN(config).to(device)
-    optimizer = optim.Adam(model.parameters(), lr=10e-3)
+    optimizer = optim.Adam(model.parameters(), lr=1e-3)
     criterion = nn.CrossEntropyLoss().to(device)
 
-    best_accuracy = 0.75
+    best_accuracy = 0.95
     for epoch in range(config.num_epoch):
         train_loss = train_fn(dataloader_train, model, device, optimizer, criterion)
         fin_outputs, fin_targets, eval_loss = eval_fn(dataloader_test, model, device, criterion)
