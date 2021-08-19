@@ -11,6 +11,7 @@ import torch.nn.functional as F
 import pandas as pd
 import numpy as np
 from sklearn import metrics
+import joblib
 
 import config
 from utils import make_data
@@ -21,7 +22,6 @@ from text_cnn import TextCNN
 
 
 def run():
-    dtype = torch.FloatTensor
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     #sentences = ["我 喜欢 你", "他 喜欢 我", "他 喜欢 篮球", "他 讨厌 你", "我 很 抱歉", "我 的 老天爷"]
@@ -35,7 +35,9 @@ def run():
 
     inputs_train, word2idx = make_data(sentences_train)
     inputs_test, word2idx = make_data(sentences_test, word2idx)
-
+    
+    joblib.dump(word2idx, 'output/word2idx.pkl') 
+    
     dataset_train = SentimentDataset(inputs_train, labels_train)
     dataloader_train = Data.DataLoader(dataset_train, config.batch_size, True)
 
