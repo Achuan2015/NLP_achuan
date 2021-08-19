@@ -31,7 +31,7 @@ def run():
     sentences_train, labels_train = dfs_train['review_clean'].tolist(), dfs_train['label'].tolist()
 
     dfs_test = pd.read_csv("data/hrtps_sentiment_2k.csv", sep="\t")
-    sentences_test, labels_test = dfs_test['review_clean'].tolist(), dfs_train['label'].tolist()
+    sentences_test, labels_test = dfs_test['review_clean'].tolist(), dfs_test['label'].tolist()
 
     inputs_train, word2idx = make_data(sentences_train)
     inputs_test, word2idx = make_data(sentences_test, word2idx)
@@ -57,7 +57,8 @@ def run():
         print('accuracy: ', accuracy)
         if accuracy > best_accuracy:
             best_accuracy = accuracy
-            torch.save(model.state_dict(), config.model_path)
+            save_path = f"_{round(accuracy, 3)}.".join(config.model_path.split("."))
+            torch.save(model.state_dict(), save_path)
 
 
 if __name__ == "__main__":
