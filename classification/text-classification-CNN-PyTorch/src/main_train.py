@@ -27,10 +27,10 @@ def run():
     #sentences = ["我 喜欢 你", "他 喜欢 我", "他 喜欢 篮球", "他 讨厌 你", "我 很 抱歉", "我 的 老天爷"]
     #labels = [1, 1, 1, 0, 0, 0]
 
-    dfs_train = pd.read_csv("data/sentiment_train_weibo_80k.csv", sep="\t")
+    dfs_train = pd.read_csv("data/weibo_hrtps_senti_corpus.csv", sep="\t")
     sentences_train, labels_train = dfs_train['review_clean'].tolist(), dfs_train['label'].tolist()
 
-    dfs_test = pd.read_csv("data/sentiment_test_2k.csv", sep="\t")
+    dfs_test = pd.read_csv("data/hrtps_sentiment_2k.csv", sep="\t")
     sentences_test, labels_test = dfs_test['review_clean'].tolist(), dfs_train['label'].tolist()
 
     inputs_train, word2idx = make_data(sentences_train)
@@ -48,10 +48,12 @@ def run():
 
     best_accuracy = 0.75
     for epoch in range(config.num_epoch):
-        train_fn(dataloader_train, model, device, optimizer, criterion)
-        fin_outputs, fin_targets = eval_fn(dataloader_test, model, device)
+        train_loss = train_fn(dataloader_train, model, device, optimizer, criterion)
+        fin_outputs, fin_targets, eval_loss = eval_fn(dataloader_test, model, device, criterion)
         output_indices = np.argmax(np.array(fin_outputs), axis=1)
         accuracy = metrics.accuracy_score(output_indices, np.array(fin_targets))
+        print('epoch: ', epoch)
+        print(f'train_loss: {train_loss} | eval_loss: {eval_loss}')
         print('accuracy: ', accuracy)
         if accuracy > best_accuracy:
             best_accuracy = accuracy
