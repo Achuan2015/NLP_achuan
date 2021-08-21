@@ -4,6 +4,6 @@ num_classes=20
 hidden_size=5
 batch_size=16
 vocab_size=50000
-num_epoch=2000
+num_epoch=10000
 num_layer=3
 model_path=""
