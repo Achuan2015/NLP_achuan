@@ -15,7 +15,7 @@ def train_fn(dataloader, model, device, optimizer, criterion):
         loss.backward()
         optimizer.step()
         train_loss += loss.item() * input.size(0)
-    trian_loss = train_loss / len(dataloader.sampler)
+    train_loss = train_loss / len(dataloader.sampler)
     return train_loss    
 
 

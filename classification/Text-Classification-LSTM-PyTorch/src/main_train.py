@@ -83,8 +83,7 @@ def run():
         fin_outputs, fin_targets, eval_loss = eval_fn(dataloader_eval, model, device, criterion)
         output_indices = np.argmax(np.array(fin_outputs), axis=1)
         accurate = accuracy_score(output_indices, fin_targets)
-        print(f'{epoch}:train_loss: {train_loss} | eval_loss: {eval_loss}')
-        print(f'{epoch} accurate: {accurate}')
+        print(f'{epoch + 1}:train_loss: {train_loss} | eval_loss: {eval_loss} | accurate: {accurate}')
         if accurate > best_accuracy:
             best_accuracy = accurate
             save_path = f"_{round(accurate, 3)}.".join(config.model_path.split("."))
