@@ -28,3 +28,25 @@ class BiLSTM(nn.Module):
         output = outputs[-1]
         output = self.fc(output)
         return output
+
+
+class TextBiLSTM(nn.Module):
+
+    def __init__(self, config):
+        super(TextBiLSTM, self).__init__()
+        self.config = config
+        self.embedding = nn.Embedding(config.vocab_size, config.feature_size)
+        self.lstm = nn.LSTM(input_size=config.feature_size, hidden_size=config.hidden_size, num_layers=config.num_layer, bidirectional=True)
+        self.fc = nn.Linear(config.hidden_size * 2,  config.num_classes)
+    
+    def forward(self, input):
+        batch_size = input.size(0)
+        hidden_state = torch.randn(self.config.num_layer * 2, batch_size, self.config.hidden_size)
+        cell_state = torch.randn(self.config.num_layer * 2, batch_size, self.config.hidden_size)
+        
+        emb_output = self.embedding(input).transpose(0, 1)
+        outputs, (_, _) = self.lstm(emb_output, (hidden_state, cell_state))
+        output = outputs[-1]
+        output = self.fc(output)
+        return output
+        
