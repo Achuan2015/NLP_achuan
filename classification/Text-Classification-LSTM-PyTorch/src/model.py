@@ -39,10 +39,10 @@ class TextBiLSTM(nn.Module):
         self.lstm = nn.LSTM(input_size=config.feature_size, hidden_size=config.hidden_size, num_layers=config.num_layer, bidirectional=True)
         self.fc = nn.Linear(config.hidden_size * 2,  config.num_classes)
     
-    def forward(self, input):
+    def forward(self, input, device):
         batch_size = input.size(0)
-        hidden_state = torch.randn(self.config.num_layer * 2, batch_size, self.config.hidden_size)
-        cell_state = torch.randn(self.config.num_layer * 2, batch_size, self.config.hidden_size)
+        hidden_state = torch.randn(self.config.num_layer * 2, batch_size, self.config.hidden_size).to(device)
+        cell_state = torch.randn(self.config.num_layer * 2, batch_size, self.config.hidden_size).to(device)
         
         emb_output = self.embedding(input).transpose(0, 1)
         outputs, (_, _) = self.lstm(emb_output, (hidden_state, cell_state))
