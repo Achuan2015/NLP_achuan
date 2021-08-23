@@ -92,6 +92,45 @@ def run():
             save_path = f"_{round(accurate, 3)}.".join(config.model_path.split("."))
             torch.save(model.state_dict(), save_path)
 
+def run_multi_gpu():
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    train_data = "../data/weibo_hrtps_senti_corpus.csv"
+    eval_data = "../data/hrtps_sentiment_2k.csv"
+    dfs_train = pd.read_csv(train_data, sep='\t')
+    dfs_eval = pd.read_csv(eval_data, sep='\t')
+    sentences_train, labels_train = dfs_train['review_clean'].tolist(), dfs_train['label'].tolist()
+    sentences_eval, labels_eval = dfs_eval['review_clean'].tolist(), dfs_eval['label'].tolist()
+
+    inputs_train, word2idx = make_data(sentences_train)
+    inputs_eval, word2idx = make_data(sentences_eval, word2idx)
+
+    joblib.dump(word2idx, "output/word2idx.pkl")
+
+    dataset_train = SentimentDataset(inputs_train, labels_train)
+    dataset_eval = SentimentDataset(inputs_eval, labels_eval)
+
+    dataloader_train = DataLoader(dataset_train, batch_size=config.batch_size, shuffle=True)
+    dataloader_eval = DataLoader(dataset_eval, batch_size=config.batch_size, shuffle=False)
+
+    model = TextBiLSTM(config).cuda()
+    model = nn.DataParallel(model, device_ids=[0, 1, 2, 4])
+
+    optimizer = optim.Adam(model.parameters(), lr=1e-3)
+    criterion = nn.CrossEntropyLoss().to(device)
+
+    best_accuracy = 0.95
+    for epoch in range(config.num_epoch):
+        train_loss = train_fn(dataloader_train, model, device, optimizer, criterion)
+        fin_outputs, fin_targets, eval_loss = eval_fn(dataloader_eval, model, device, criterion)
+        output_indices = np.argmax(np.array(fin_outputs), axis=1)
+        accurate = accuracy_score(output_indices, fin_targets)
+        print(f'{epoch + 1}:train_loss: {train_loss} | eval_loss: {eval_loss} | accurate: {accurate}')
+        if accurate > best_accuracy:
+            best_accuracy = accurate
+            save_path = f"_{round(accurate, 3)}.".join(config.model_path.split("."))
+            torch.save(model.module.state_dict(), save_path)
+
 
 if __name__ == "__main__":
-    run()
+    run_multi_gpu()

@@ -43,7 +43,7 @@ def run():
     fin_outputs = predict_fn(dataloader_eval, model, device)
     fin_indices = np.argmax(np.array(fin_outputs), axis=1)
     dfs_eval['predict'] = list(fin_indices)
-    dfs_eval.to_csv("output/predict_result.csv", sep='\t', index=False)
+    dfs_eval[['review_clean', 'label', 'predict']].to_csv("output/predict_result.csv", sep='\t', index=False)
 
 
 if __name__ == "__main__":
