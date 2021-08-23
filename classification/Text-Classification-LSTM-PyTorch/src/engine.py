@@ -31,7 +31,7 @@ def eval_fn(dataloader, model, device, criterion):
         output = model(input, device)
         loss = criterion(output, target.view(-1))
         eval_loss += loss.item() * input.size(0)
-        fin_outputs.append(output.cpu().detach().numpy().tolist())
-        fin_targets.append(target.view(-1).cpu().detach().numpy().tolist())
+        fin_outputs.extend(output.cpu().detach().numpy().tolist())
+        fin_targets.extend(target.view(-1).cpu().detach().numpy().tolist())
     eval_loss = eval_loss / len(dataloader.sampler)
     return fin_outputs, fin_targets, eval_loss
