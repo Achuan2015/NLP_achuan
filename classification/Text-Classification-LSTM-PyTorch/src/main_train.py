@@ -100,8 +100,7 @@ def run_multi_gpu():
     dfs_train = pd.read_csv(train_data, sep='\t')
     dfs_eval = pd.read_csv(eval_data, sep='\t')
     sentences_train, labels_train = dfs_train['review_clean'].tolist(), dfs_train['label'].tolist()
-    sentences_eval, labels_eval = dfs_eval['review_clean'].tolist(), dfs_eval['label'].tolist()
-
+    sentences_eval, labels_eval = dfs_eval['review_clean'].tolist(), dfs_eval['label'].tolist() 
     inputs_train, word2idx = make_data(sentences_train)
     inputs_eval, word2idx = make_data(sentences_eval, word2idx)
 
@@ -114,7 +113,7 @@ def run_multi_gpu():
     dataloader_eval = DataLoader(dataset_eval, batch_size=config.batch_size, shuffle=False)
 
     model = TextBiLSTM(config).cuda()
-    model = nn.DataParallel(model, device_ids=[0, 1, 2, 4])
+    model = nn.DataParallel(model, device_ids=[0, 1])
 
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
     criterion = nn.CrossEntropyLoss().to(device)
