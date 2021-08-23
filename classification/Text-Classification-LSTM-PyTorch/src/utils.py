@@ -1,6 +1,7 @@
 import numpy as np
 import jieba
 import torch
+from pathlib import Path
 
 import config
 
@@ -50,3 +51,20 @@ def make_data(sentences, word2idx=None):
             sent_ids.append(word2idx[word])
         inputs_id.append(sent_ids)
     return inputs_id, word2idx
+
+def get_bestmodel_path(direction):
+    dir = Path(direction)
+    max_num = 0
+    path = None
+    for p in dir.glob("*.bin"):
+        cur_num = eval(p.stem.split("_")[-1])
+        if cur_num > max_num:
+            max_num = cur_num
+            path = p
+    return path
+
+
+if __name__ == "__main__":
+    p = "output"
+    path = get_bestmodel_path(p)
+    print(path.as_posix())

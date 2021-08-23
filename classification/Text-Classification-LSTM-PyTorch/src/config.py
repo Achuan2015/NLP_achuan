@@ -5,6 +5,6 @@ feature_size=200
 hidden_size=200
 batch_size=256
 vocab_size=50000
-num_epoch=40
+num_epoch=30
 num_layer=3
 model_path="output/sentimen_analyse_lstm_3.bin"

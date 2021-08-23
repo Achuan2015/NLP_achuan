@@ -35,3 +35,13 @@ def eval_fn(dataloader, model, device, criterion):
         fin_targets.extend(target.view(-1).cpu().detach().numpy().tolist())
     eval_loss = eval_loss / len(dataloader.sampler)
     return fin_outputs, fin_targets, eval_loss
+
+def predict_fn(dataloader, model, device):
+    model.eval()
+
+    fin_outputs = []
+    for i , data in tqdm(enumerate(dataloader), total=len(dataloader)):
+        input = data[0].to(device)
+        output = model(input, device)
+        fin_outputs.extend(output.cpu().detach().numpy().tolist())
+    return fin_outputs

@@ -1,3 +1,4 @@
+import joblib
 import torch
 import torch.nn as nn
 import numpy as np
@@ -67,11 +68,13 @@ def run():
     inputs_train, word2idx = make_data(sentences_train)
     inputs_eval, word2idx = make_data(sentences_eval, word2idx)
 
+    joblib.dump(word2idx, "output/word2idx.pkl")
+
     dataset_train = SentimentDataset(inputs_train, labels_train)
     dataset_eval = SentimentDataset(inputs_eval, labels_eval)
 
     dataloader_train = DataLoader(dataset_train, batch_size=config.batch_size, shuffle=True)
-    dataloader_eval = DataLoader(dataset_eval, batch_size=config.batch_size, shuffle=True)
+    dataloader_eval = DataLoader(dataset_eval, batch_size=config.batch_size, shuffle=False)
 
     model = TextBiLSTM(config).to(device)
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
