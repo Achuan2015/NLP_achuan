@@ -10,7 +10,7 @@ def train_fn(dataloader, model, device, optimizer, criterion):
     for i, data in tqdm(enumerate(dataloader), total=len(dataloader)):
         input, target = data[0].to(device), data[1].to(device)
         optimizer.zero_grad()
-        output = model(input)
+        output = model(input, device)
         loss = criterion(output, target.view(-1))
         loss.backward()
         optimizer.step()
@@ -28,7 +28,7 @@ def eval_fn(dataloader, model, device, criterion):
     eval_loss = 0.0
     for i, data in tqdm(enumerate(dataloader), total=len(dataloader)):
         input, target = data[0].to(device), data[1].to(device)
-        output = model(input)
+        output = model(input, device)
         loss = criterion(output, target.view(-1))
         eval_loss += loss.item() * input.size(0)
         fin_outputs.append(output.cpu().detach().numpy().tolist())
