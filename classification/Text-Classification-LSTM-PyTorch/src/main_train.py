@@ -57,8 +57,8 @@ def run_test():
 def run():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    train_data = "/Users/hrtps/Projects/momian/NLP_achuan/classification/data/weibo_hrtps_senti_corpus.csv"
-    eval_data = "/Users/hrtps/Projects/momian/NLP_achuan/classification/data/hrtps_sentiment_2k.csv"
+    train_data = "../data/weibo_hrtps_senti_corpus.csv"
+    eval_data = "../data/hrtps_sentiment_2k.csv"
     dfs_train = pd.read_csv(train_data, sep='\t')
     dfs_eval = pd.read_csv(eval_data, sep='\t')
     sentences_train, labels_train = dfs_train['review_clean'].tolist(), dfs_train['label'].tolist()
