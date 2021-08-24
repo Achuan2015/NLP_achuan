@@ -1,9 +1,11 @@
+from sklearn.utils.multiclass import type_of_target
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 import numpy as np
 import pandas as pd
+from sklearn.metrics import accuracy_score
 from transformers import BertConfig, BertForSequenceClassification
 
 import config
@@ -46,7 +48,10 @@ def run():
     optimizer = optim.AdamW(optimizer_grouped_parameters, lr=learning_rate)
     for epoch in range(config.epochs):
         train_loss = train_fn(datalaoder_train, model, device, optimizer)
-        print(f'epoch: {epoch + 1} | train_loss: {train_loss} | accurate: {0.5}')
+        eval_loss, fin_outputs = eval_fn(dataloader_eval, model, device)
+        fin_indices = np.argmax(np.array(fin_outputs), axis=1)
+        accuracy = accuracy_score(fin_indices, np.array(labels_eval))
+        print(f'epoch: {epoch + 1} | train_loss: {train_loss} | eval_loss: {eval_loss} |accurate: {accuracy}')
     
 
 if __name__ == "__main__":
