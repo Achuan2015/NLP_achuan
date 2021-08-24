@@ -29,7 +29,7 @@ def eval_fn(dataloader, model, device):
         outputs =  model(input_ids, attention_mask, token_type_id, labels=target)
         loss = outputs[0]
         logits = outputs[1]
-        fin_output.extend(logits.view(-1).cpu().detach().numpy().tolist())
+        fin_output.extend(logits.cpu().detach().numpy().tolist())
         eval_loss += loss.item() * input_ids.size(0)
     eval_loss = eval_loss / len(dataloader.sampler)
     return eval_loss, fin_output
