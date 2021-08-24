@@ -46,12 +46,18 @@ def run():
         {'params':[p for n, p in model.named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
     ]
     optimizer = optim.AdamW(optimizer_grouped_parameters, lr=learning_rate)
+
+    best_accurate = 0.8
+    model_output = config.model_output
     for epoch in range(config.epochs):
         train_loss = train_fn(datalaoder_train, model, device, optimizer)
         eval_loss, fin_outputs = eval_fn(dataloader_eval, model, device)
         fin_indices = np.argmax(np.array(fin_outputs), axis=1)
         accuracy = accuracy_score(fin_indices, np.array(labels_eval))
         print(f'epoch: {epoch + 1} | train_loss: {train_loss} | eval_loss: {eval_loss} |accurate: {accuracy}')
+        if accuracy > best_accurate:
+            best_accurate = accuracy
+            model.save_pretrained(model_output)
     
 
 if __name__ == "__main__":

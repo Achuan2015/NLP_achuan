@@ -10,3 +10,4 @@ learning_rate=1e-3
 num_labels=3
 tokenizer = BertTokenizer.from_pretrained(model_path)
 tokenizer.save_pretrained(model_path)
+model_output="output/roberta_zh_large_finetuing"
