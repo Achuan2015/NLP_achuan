@@ -21,6 +21,7 @@ def run():
     dfs_train = pd.read_csv(path_train, sep="\t")
     dfs_eval = pd.read_csv(path_eval, sep="\t")
 
+    sentences_train, labels_train = dfs_train['review_clean'].tolist()[:3000], dfs_train['label'].tolist()[:3000]
     sentences_train, labels_train = dfs_train['review_clean'].tolist(), dfs_train['label'].tolist()
     sentences_eval, labels_eval = dfs_eval['review_clean'].tolist(), dfs_eval['label'].tolist()
 

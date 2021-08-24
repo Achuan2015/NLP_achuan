@@ -9,7 +9,7 @@ def train_fn(dataloader, model, device, optimizer):
         input_ids, token_type_id, attention_mask, target = data['input_ids'].to(device), data['token_type_id'].to(device), \
             data['attention_mask'].to(device), data['targets'].to(device)
         optimizer.zero_grad()
-        outputs =  model(input_ids, attention_mask, token_type_id, labels=target)
+        outputs = model(input_ids=input_ids, attention_mask=attention_mask, token_type_ids=token_type_id, labels=target)
         loss = outputs[0]
         loss.backward()
         optimizer.step()
@@ -27,7 +27,7 @@ def eval_fn(dataloader, model, device):
     for i, data in tqdm(enumerate(dataloader), total=len(dataloader)):
         input_ids, token_type_id, attention_mask, target = data['input_ids'].to(device), data['token_type_id'].to(device), \
             data['attention_mask'].to(device), data['targets'].to(device)
-        outputs =  model(input_ids, attention_mask, token_type_id, labels=target)
+        outputs =  model(input_ids=input_ids, attention_mask=attention_mask, token_type_ids=token_type_id, labels=target)
         loss = outputs[0]
         logits = outputs[1]
         fin_output.extend(logits.cpu().detach().numpy().tolist())
