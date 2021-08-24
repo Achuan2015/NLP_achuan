@@ -1,6 +1,6 @@
 import torch
 import config
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, dataset
 
 
 class MyDataset(Dataset):
@@ -8,6 +8,9 @@ class MyDataset(Dataset):
     def __init__(self, inputs, targets):
         self.inputs = inputs
         self.targets = targets
+    
+    def __len__(self):
+        return len(self.inputs)
     
     def __getitem__(self, idx):
         input = self.inputs[idx]
@@ -29,3 +32,12 @@ class MyDataset(Dataset):
             "token_type_id": torch.LongTensor(token_type_ids),
             "targets": torch.LongTensor([target])
         }
+
+
+if __name__ == "__main__":
+    inputs = ['今天天气很好']
+    targets = [1]
+    dataset = MyDataset(inputs, targets)
+    print(len(dataset))
+    print(dataset[0])
+    
