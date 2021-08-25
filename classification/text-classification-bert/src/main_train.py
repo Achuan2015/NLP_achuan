@@ -61,12 +61,11 @@ def run():
     model_output = config.model_output
     for epoch in range(config.epochs):
         train_loss = train_fn(datalaoder_train, model, device, optimizer)
-        eval_loss, fin_outputs, fin_targets = eval_fn(dataloader_eval, model, device)
-        fin_indices = np.argmax(np.array(fin_outputs), axis=1)
-        accuracy = accuracy_score(fin_indices, np.array(fin_targets))
-        print(f'epoch: {epoch + 1} | train_loss: {train_loss} | eval_loss: {eval_loss} |accurate: {accuracy}')
-        if accuracy > best_accurate:
-            best_accurate = accuracy
+        eval_loss, eval_accu = eval_fn(dataloader_eval, model, device)
+        
+        print(f'epoch: {epoch + 1} | train_loss: {train_loss} | eval_loss: {eval_loss} |accurate: {eval_accu}')
+        if eval_accu > best_accurate:
+            best_accurate = eval_accu
             model.save_pretrained(model_output)
     
 
