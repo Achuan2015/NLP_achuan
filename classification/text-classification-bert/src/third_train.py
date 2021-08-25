@@ -78,7 +78,7 @@ def run():
     optimizer = optim.AdamW(optimizer_parameters, lr=config.learning_rate)
     
     # 设置训练的 scheduler
-    num_training_step = (len(df_train) / config.batch_size) * config.epochs
+    num_training_step = (len(dfs_train) / config.batch_size) * config.epochs
     scheduler = get_linear_schedule_with_warmup(
         optimizer,
         num_warmup_steps=0,
