@@ -1,6 +1,6 @@
 import torch
 import config
-from torch.utils.data import Dataset, dataset
+from torch.utils.data import Dataset
 
 
 class MyDataset(Dataset):

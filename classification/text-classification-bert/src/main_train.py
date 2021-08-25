@@ -1,10 +1,10 @@
-from sklearn.utils.multiclass import type_of_target
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 import numpy as np
 import pandas as pd
+import random
 from sklearn.metrics import accuracy_score
 from transformers import BertConfig, BertForSequenceClassification
 
@@ -12,6 +12,13 @@ import config
 from dataset import MyDataset
 from engine import train_fn, eval_fn
 
+# Set the seed value all over the place to make this reproducible.
+seed_val = 42
+
+random.seed(seed_val)
+np.random.seed(seed_val)
+torch.manual_seed(seed_val)
+torch.cuda.manual_seed_all(seed_val)
 
 def run():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -34,10 +41,12 @@ def run():
     # 载入预训练模型的BertConfig基于BertForSequenceClassification
     model_path = config.model_path
     config_bert = BertConfig.from_pretrained(model_path, num_labels=config.num_labels, hidden_dropout_prob=config.hidden_dropout_prob)
+    
+
     model = BertForSequenceClassification.from_pretrained(model_path, config=config_bert).to(device)
     # 定义优化器 optimizer ， 损失函数 已经在 model里面了
     ## method 1： 简单定义优化器
-    optimizer = optim.AdamW(model.parameters(), lr=1e-3)
+    # optimizer = optim.AdamW(model.parameters(), lr=1e-3)
     ## method 2：详细定义优化指定 一些模块不进行权重衰减 weight decay
     no_decay = ['bias', 'LayerNorm.weight']
     weight_decay = config.weight_decay

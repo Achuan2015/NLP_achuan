@@ -14,3 +14,22 @@ BertForSequenceClassification 输出:
        hidden_states： bertmodel 的输出
        attention: bertmodel 的输出
 """
+
+import torch.nn as nn
+from transformers import BertModel
+
+
+class BertForSequenceClassification(nn.Module):
+
+    def __init__(self, config):
+        super(BertForSequenceClassification, self).__init__()
+        self.config = config
+        self.bert = BertModel.from_pretrained(config.model_path)
+        self.dropout = config.hidden_dropout_prob
+        self.classifier = nn.Linear(config.hidden_size, config.num_labels)
+    
+    def forward(self, input_ids, attention_mask, token_type_ids):
+        outputs = self.bert(input_ids, attention_mask, token_type_ids)
+        pooler_output = self.dropout(outputs.pooler_output)
+        output = self.classifier(pooler_output)
+        return output
