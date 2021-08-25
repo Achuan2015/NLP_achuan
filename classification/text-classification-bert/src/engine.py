@@ -1,5 +1,7 @@
 from tqdm.auto import tqdm
 import torch
+import numpy as np
+from sklearn import metrics
 
 
 
@@ -24,18 +26,20 @@ def eval_fn_second(dataloader, model, device, criterion):
     model.eval()
 
     eval_loss = 0.0
-    fin_output = []
-    fin_target = []
+    eval_accu = 0.0
     for i, data in tqdm(enumerate(dataloader), total=len(dataloader)):
         input_ids, mask_attention, token_type_ids, targets = data['input_ids'].to(device),\
             data['attention_mask'].to(device), data['token_type_id'].to(device), data['targets'].to(device)
         outputs = model(input_ids, mask_attention, token_type_ids)
         loss = criterion(outputs, targets.view(-1))
         eval_loss += loss.item()
-        fin_output.extend(outputs.cpu().detach().numpy())
-        fin_target.extend(targets.view(-1).cpu().detach().numpy())
+        output_array = outputs.cpu().detach().numpy()
+        output_target = output_array.argmax(axis=1)
+        accuracy = metrics.accuracy_score(output_target, targets.view(-1).cpu().detach().numpy())
+        eval_accu += accuracy
     eval_loss = eval_loss / len(dataloader)
-    return eval_loss, fin_output, fin_target
+    eval_accu = eval_accu / len(dataloader)
+    return eval_loss, eval_accu
 
 
 def train_fn(dataloader, model, device, optimizer):
