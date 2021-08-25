@@ -87,12 +87,10 @@ def run():
     best_accuracy=0.8
     for epoch in range(config.epochs):
         train_loss = train_fn_second(dataloader_train, model, device, optimizer, critriion, scheduler)
-        eval_loss, fin_output, fin_target = eval_fn_second(dataloader_valid, model, device, critriion)
-        predict_target = fin_output.argmax(axis=1)
-        accuracy = metrics.accuracy_score(predict_target, fin_target)
-        print(f'epoch:{epoch + 1} train_loss:{train_loss} eval_loss:{eval_loss} accuracy:{accuracy}')
-        if accuracy > best_accuracy:
-            best_accuracy = accuracy
+        eval_loss, eval_accu = eval_fn_second(dataloader_valid, model, device, critriion)
+        print(f'epoch:{epoch + 1} train_loss:{train_loss} eval_loss:{eval_loss} accuracy:{eval_accu}')
+        if eval_accu > best_accuracy:
+            best_accuracy = eval_accu
             torch.save(model.state_dict(), config.model_output)
 
 
