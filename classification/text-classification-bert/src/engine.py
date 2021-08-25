@@ -32,7 +32,7 @@ def eval_fn_second(dataloader, model, device, criterion):
         outputs = model(input_ids, mask_attention, token_type_ids)
         loss = criterion(outputs, targets.view(-1))
         eval_loss += loss.item()
-        fin_output.extend(outputs.cpu().detach().numpu())
+        fin_output.extend(outputs.cpu().detach().numpy())
         fin_target.extend(targets.view(-1).cpu().detach().numpy())
     eval_loss = eval_loss / len(dataloader)
     return eval_loss, fin_output, fin_target
