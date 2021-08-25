@@ -58,7 +58,6 @@ def run():
     optimizer = optim.AdamW(optimizer_grouped_parameters, lr=learning_rate)
 
     best_accurate = 0.8
-    model_output = config.model_output
     for epoch in range(config.epochs):
         train_loss = train_fn(datalaoder_train, model, device, optimizer)
         eval_loss, eval_accu = eval_fn(dataloader_eval, model, device)
@@ -66,7 +65,7 @@ def run():
         print(f'epoch: {epoch + 1} | train_loss: {train_loss} | eval_loss: {eval_loss} |accurate: {eval_accu}')
         if eval_accu > best_accurate:
             best_accurate = eval_accu
-            model.save_pretrained(model_output)
+            model.save_pretrained(config.model_output_dir)
     
 
 if __name__ == "__main__":
