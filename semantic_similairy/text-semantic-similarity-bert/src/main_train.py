@@ -61,7 +61,7 @@ def run():
 
     # 初始化 BERT model
     bert_config = BertConfig.from_pretrained(config.model_path)
-    model = BertForSiameseNetwork(bert_config, config.model_path)
+    model = BertForSiameseNetwork(bert_config, config.model_path).to(device)
     # 构造分组参数优化器
     no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
     param_optimizer = list(model.named_parameters())
