@@ -50,7 +50,7 @@ class CrossEncodeDataset(Dataset):
     def __getitem__(self, idx):
         query = self.querys[idx]
         candidate = self.candidates[idx]
-        input_encoded = config.tokenzier.encode_plus(
+        input_encoded = config.tokenizer.encode_plus(
             query, candidate,
             add_special_tokens=True,
             max_length=config.max_seq_len,
@@ -58,8 +58,7 @@ class CrossEncodeDataset(Dataset):
             truncation="longest_first"
         )
         return {
-            "query": {key:torch.LongTensor(val) for key, val in input_encoded.items()},
-            "candidate": {key:torch.LongTensor(val) for key, val in input_encoded.items()},
+            "input": {key:torch.LongTensor(val) for key, val in input_encoded.items()},
             "label": torch.LongTensor([self.labels[idx]])
         }
 
