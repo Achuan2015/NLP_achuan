@@ -87,7 +87,7 @@ def eval_fn(dataloader, model, device):
             input, label = data['input'], data['label']
             input, label = convert2device(input, device), label.to(device)
             outputs = model(**input, labels=label)
-            loss, logits = outputs[0], logits
+            loss, logits = outputs[0], outputs[1]
             accuracy =  torch.sum(label.view(-1) == (logits.view(-1) > 0.5).long()) / label.size(0)
             eval_accu += accuracy.item()
             eval_loss += loss.item()
