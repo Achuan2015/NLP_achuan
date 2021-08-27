@@ -2,9 +2,8 @@ from transformers import BertTokenizer
 
 max_seq_len=40
 epochs=3
-batch_size=128
+batch_size=256
 weight_decay=1e-3
-epochs=3
 hidden_dropout_prob=0.3
 num_labels=1
 learning_rate=2e-5
