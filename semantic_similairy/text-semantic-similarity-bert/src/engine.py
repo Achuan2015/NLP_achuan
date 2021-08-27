@@ -90,7 +90,7 @@ def eval_fn(dataloader, model, device):
             loss, logits = outputs[0], outputs[1]
             accuracy =  torch.sum(label.view(-1) == (logits.view(-1) > 0.5).long()) / label.size(0)
             eval_accu += accuracy.item()
-            eval_loss += loss.item()
+            eval_loss += loss.mean().item()
     eval_loss = eval_loss / len(dataloader)
     eval_accu = eval_accu / len(dataloader)
     return eval_loss, eval_accu
