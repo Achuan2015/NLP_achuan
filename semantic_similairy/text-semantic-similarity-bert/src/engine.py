@@ -67,7 +67,6 @@ def train_fn(dataloader, model, device, optimizer, scheduler):
     for i, data in tqdm(enumerate(dataloader), total=len(dataloader)):
         input, label = data['input'], data['label']
         input, label = convert2device(input, device), label.to(device)
-        
         optimizer.zero_grad()
         outputs = model(**input, labels=label)
         loss = outputs[0]
@@ -90,7 +89,7 @@ def eval_fn(dataloader, model, device):
             outputs = model(**input, labels=label)
             loss, logits = outputs[0], logits
             accuracy =  torch.sum(label.view(-1) == (logits.view(-1) > 0.5).long()) / label.size(0)
-            eval_accu += accuracy
+            eval_accu += accuracy.item()
             eval_loss += loss.item()
     eval_loss = eval_loss / len(dataloader)
     eval_accu = eval_accu / len(dataloader)
