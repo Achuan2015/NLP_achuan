@@ -42,14 +42,26 @@ class SiameseDataset(Dataset):
 
 class CrossEncodeDataset(Dataset):
 
-    def __init__(self, encoded_data, labels):
-        self.encoded_data = encoded_data
+    def __init__(self, querys, candidates, labels):
+        self.querys = querys
+        self.candidates = candidates
         self.labels = labels
 
     def __getitem__(self, idx):
-        item = {key: val[idx] for key, val in self.encoded_data.items()}
-        item['labels'] = self.labels[idx]
-        return item
+        query = self.querys[idx]
+        candidate = self.candidates[idx]
+        input_encoded = config.tokenzier.encode_plus(
+            query, candidate,
+            add_special_tokens=True,
+            max_length=config.max_seq_len,
+            padding="max_length",
+            truncation="longest_first"
+        )
+        return {
+            "query": {key:torch.LongTensor(val) for key, val in input_encoded.items()},
+            "candidate": {key:torch.LongTensor(val) for key, val in input_encoded.items()},
+            "label": torch.LongTensor([self.labels[idx]])
+        }
 
     def __len__(self):
         return len(self.labels)
