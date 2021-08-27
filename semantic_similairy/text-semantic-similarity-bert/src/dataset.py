@@ -59,7 +59,7 @@ class CrossEncodeDataset(Dataset):
         )
         return {
             "input": {key:torch.LongTensor(val) for key, val in input_encoded.items()},
-            "label": torch.LongTensor([self.labels[idx]])
+            "label": torch.tensor(self.labels[idx], dtype=torch.float)
         }
 
     def __len__(self):
