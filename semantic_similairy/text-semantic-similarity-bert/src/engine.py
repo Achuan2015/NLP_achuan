@@ -71,7 +71,6 @@ def train_fn(dataloader, model, device, optimizer, scheduler):
         optimizer.zero_grad()
         outputs = model(**input, labels=label)
         loss = outputs[0]
-        loss = loss.mean()
         loss.backward()
         optimizer.step()
         scheduler.step()

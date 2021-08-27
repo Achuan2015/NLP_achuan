@@ -208,7 +208,7 @@ def run_second():
             num_labels=config.num_labels, 
             hidden_dropout_prob=config.hidden_dropout_prob
     )
-    model = nn.DataParallel(model, device_ids=[0,1,2]).to(device)
+    model = nn.DataParallel(model, device_ids=[0,1]).to(device)
     # 构造分组参数优化器
     no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
     param_optimizer = list(model.named_parameters())
