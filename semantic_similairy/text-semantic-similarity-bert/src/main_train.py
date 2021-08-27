@@ -170,4 +170,4 @@ def run_multi():
 
 
 if __name__ == "__main__":
-    run()
+    run_multi()

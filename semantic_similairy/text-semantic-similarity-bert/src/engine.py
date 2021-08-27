@@ -53,7 +53,9 @@ def eval_cosine_fn(dataloader, model, device):
             loss = cosine_loss_fn(query_emb, candidate_emb, label.view(-1))
             
             cos_output = cos(query_emb, candidate_emb)
-            accuracy = torch.sum(cos_output > threshold) / query_emb.size(0)
+            cos_output = (cos_output > 0.5).long()
+            
+            accuracy = torch.sum(cos_output == label.view(-1))/ cos_output.size(0)
             eval_accu += accuracy.item()
             eval_loss += loss.item()
     eval_loss = eval_loss / len(dataloader)
