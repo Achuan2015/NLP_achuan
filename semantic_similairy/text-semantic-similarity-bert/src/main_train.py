@@ -168,7 +168,7 @@ def run_multi():
             model.module.save_pretrained(config.output_path)
 
 def run_second():
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     path_train = "../data/50_kmeans_train_data.csv"
     dfs = pd.read_csv(path_train, sep="\t")
@@ -207,7 +207,8 @@ def run_second():
     model = BertForSequenceClassification.from_pretrained(config.model_path, 
             num_labels=config.num_labels, 
             hidden_dropout_prob=config.hidden_dropout_prob
-    ).to(device)
+    )
+    model = nn.DataParallel(model, device_ids=[0,1,2]).to(device)
     # 构造分组参数优化器
     no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
     param_optimizer = list(model.named_parameters())
