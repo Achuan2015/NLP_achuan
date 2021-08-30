@@ -1,8 +1,8 @@
 from transformers import BertTokenizer
 
 max_seq_len=40
-epochs=3
-batch_size=384
+epochs=7
+batch_size=512
 weight_decay=1e-3
 hidden_dropout_prob=0.3
 hidden_size=768
