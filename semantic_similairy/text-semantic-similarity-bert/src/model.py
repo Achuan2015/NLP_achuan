@@ -1,6 +1,9 @@
 from transformers import  BertPreTrainedModel
 from transformers import BertModel
 import torch
+from transformers.utils.dummy_pt_objects import BertForPreTraining
+import torch.nn as nn
+
 
 class BertForSiameseNetwork(BertPreTrainedModel):
     """
@@ -61,3 +64,30 @@ class BertForPoolingNetwork(BertPreTrainedModel):
     def forward(self, input_encoded):
         pooler_embedding = self.encode(input_encoded)
         return pooler_embedding
+
+
+class BertCNNForClassification(BertForPreTraining):
+
+    def __init__(self, bert_config, config):
+        super(BertCNNForClassification, self).__init__(bert_config)
+        self.bert = BertModel.from_pretrained(config.model_path)
+        self.convs = nn.ModuleList(
+            [
+               nn.Sequential(nn.Conv1d(config.hidden_size, config.feature_size, kernel_size=h),
+               nn.ReLU(), nn.MaxPool1d(config.max_seq_len - h + 1)) for h in config.window_sizes
+            ]
+        )
+        self.classifier = nn.Linear(config.feature_size * len(config.window_sizes), config.num_labels)
+    
+    def cell_textcnn(self, x_emb):
+        x_emb = x_emb.transpose(1, 2)
+        out = [conv1d(x_emb) for conv1d in self.convs]
+        out = torch.cat(out, dim=1)
+        # flatten the out
+        out = out.view()
+
+    def forward(self, input_encoded):
+        outputs_bert = self.bert(input_encoded)
+        output_sequence = outputs_bert[0]
+        cnn_output = self.cell_textcnn(output_sequence)
+        return cnn_output

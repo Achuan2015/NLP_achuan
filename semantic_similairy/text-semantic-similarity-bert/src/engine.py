@@ -14,6 +14,10 @@ def ce_loss_fn(device):
     return nn.CrossEntropyLoss().to(device)
 
 
+def mse_loss_fn(output, label):
+    return nn.MSELoss()(output.view(-1, 1), label.view(-1))
+
+
 def convert2device(x, device):
     return {key:value.to(device) for key, value in x.items()}
 
@@ -59,6 +63,40 @@ def eval_cosine_fn(dataloader, model, device):
     eval_accu = eval_accu / len(dataloader)
     return eval_loss, eval_accu
 
+def train_mse_fn(dataloader, model, device, optimizer, scheduler):
+    model.train()
+
+    train_loss = 0.0
+    for i, data in tqdm(enumerate(dataloader), total=len(dataloader)):
+        input, label = data['input'], data['label']
+        input, label = convert2device(input, device), label.to(device)
+        optimizer.zero_grad()
+        outputs = model(input)
+        loss = mse_loss_fn(outputs, label)
+        loss.backward()
+        optimizer.step()
+        scheduler.step()
+        train_loss += loss.item()
+    train_loss = train_loss / len(dataloader)
+    return train_loss
+
+def eval_mse_fn(dataloader, model, device):
+    model.eval()
+
+    eval_loss = 0.0
+    eval_accu = 0.0
+    with torch.no_grad():
+        for i, data in tqdm(enumerate(dataloader), total=len(dataloader)):
+            input, label = data['input'], data['label']
+            input, label = convert2device(input, device), label.to(device)
+            logits = model(input)
+            loss = mse_loss_fn(logits, label)
+            accuracy =  torch.sum(label.view(-1) == (logits.view(-1) > 0.5).long()) / label.size(0)
+            eval_accu += accuracy.item()
+            eval_loss += loss.mean().item()
+    eval_loss = eval_loss / len(dataloader)
+    eval_accu = eval_accu / len(dataloader)
+    return eval_loss, eval_accu
 
 def train_fn(dataloader, model, device, optimizer, scheduler):
     model.train()
