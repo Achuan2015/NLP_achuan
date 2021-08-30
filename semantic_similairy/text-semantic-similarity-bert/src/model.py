@@ -69,7 +69,7 @@ class BertForPoolingNetwork(BertPreTrainedModel):
 class BertCNNForClassification(BertForPreTraining):
 
     def __init__(self, bert_config, config):
-        super(BertCNNForClassification, self).__init__(bert_config)
+        super().__init__(bert_config)
         self.bert = BertModel.from_pretrained(config.model_path)
         self.convs = nn.ModuleList(
             [
