@@ -12,7 +12,8 @@ from transformers import get_linear_schedule_with_warmup
 from dataset import SiameseDataset, CrossEncodeDataset
 from model import BertCNNForClassification
 from engine import train_mse_fn, eval_mse_fn, train_fn, eval_fn
-import config_nezha as config
+#import config_nezha as config
+import config_albert as config
 
 
 # Set the seed value all over the place to make this reproducible.
@@ -172,4 +173,5 @@ def run_second():
 
 
 if __name__ == "__main__":
-    run_second()
+    run()
+    #run_second()
