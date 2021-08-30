@@ -1,7 +1,6 @@
 from transformers import  BertPreTrainedModel
 from transformers import BertModel
 import torch
-from transformers.utils.dummy_pt_objects import BertForPreTraining
 import torch.nn as nn
 
 
