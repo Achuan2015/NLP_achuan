@@ -96,3 +96,7 @@ def run():
         if eval_accu > best_accuracy:
             best_accuracy = eval_accu
             model.module.save_pretrained(config.output_path)
+
+
+if __name__ == "__main__":
+    run()
