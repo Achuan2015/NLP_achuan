@@ -80,11 +80,12 @@ class BertCNNForClassification(BertForPreTraining):
         self.classifier = nn.Linear(config.feature_size * len(config.window_sizes), config.num_labels)
     
     def cell_textcnn(self, x_emb):
-        x_emb = x_emb.transpose(1, 2)
-        out = [conv1d(x_emb) for conv1d in self.convs]
-        out = torch.cat(out, dim=1)
+        x_emb = x_emb.transpose(1, 2) # batch_size * hidden_size * max_seq
+        out = [conv1d(x_emb) for conv1d in self.convs] # batch_size * feature_size * 1
+        out = torch.cat(out, dim=1) # batch_size * feature_size * window length * 1
         # flatten the out
-        out = out.view()
+        out = out.view(-1, out.size(1))
+        return out
 
     def forward(self, input_encoded):
         outputs_bert = self.bert(input_encoded)
