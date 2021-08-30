@@ -65,7 +65,7 @@ class BertForPoolingNetwork(BertPreTrainedModel):
         return pooler_embedding
 
 
-class BertCNNForClassification(BertForPreTraining):
+class BertCNNForClassification(BertPreTrainedModel):
 
     def __init__(self, bert_config, config):
         super().__init__(bert_config)
