@@ -91,4 +91,4 @@ class BertCNNForClassification(BertPreTrainedModel):
         output_sequence = outputs_bert[0]
         cnn_output = self.cell_textcnn(output_sequence)
         output = self.classifier(cnn_output)
-        return cnn_output
+        return output
