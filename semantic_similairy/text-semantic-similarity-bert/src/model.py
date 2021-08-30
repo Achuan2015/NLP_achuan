@@ -81,7 +81,7 @@ class BertCNNForClassification(BertPreTrainedModel):
     def cell_textcnn(self, x_emb):
         x_emb = x_emb.transpose(1, 2) # batch_size * hidden_size * max_seq
         out = [conv1d(x_emb) for conv1d in self.convs] # batch_size * feature_size * 1
-        out = torch.cat(out, dim=1) # batch_size * feature_size * window length * 1
+        out = torch.cat(out, dim=1) # batch_size * feature_size * 1
         # flatten the out
         out = out.view(-1, out.size(1))
         return out
@@ -90,4 +90,5 @@ class BertCNNForClassification(BertPreTrainedModel):
         outputs_bert = self.bert(**input_encoded)
         output_sequence = outputs_bert[0]
         cnn_output = self.cell_textcnn(output_sequence)
+        output = self.classifier(cnn_output)
         return cnn_output

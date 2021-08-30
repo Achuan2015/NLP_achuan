@@ -93,7 +93,7 @@ def eval_mse_fn(dataloader, model, device):
             logits = model(input)
             loss = mse_loss_fn(logits, label)
             loss = loss.mean()
-            accuracy =  torch.sum(label.view(-1) == (logits.view(-1) > 0.5).long()) / label.size(0)
+            accuracy = torch.sum(label.view(-1) == (logits.view(-1) > 0.5).long()) / label.size(0)
             eval_accu += accuracy.item()
             eval_loss += loss.mean().item()
     eval_loss = eval_loss / len(dataloader)
