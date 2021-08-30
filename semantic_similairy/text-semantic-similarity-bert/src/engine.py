@@ -15,7 +15,7 @@ def ce_loss_fn(device):
 
 
 def mse_loss_fn(output, label):
-    return nn.MSELoss()(output.view(-1, 1), label.view(-1))
+    return nn.MSELoss()(output.view(-1), label.view(-1))
 
 
 def convert2device(x, device):
