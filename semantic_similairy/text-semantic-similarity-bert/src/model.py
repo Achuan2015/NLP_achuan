@@ -87,7 +87,7 @@ class BertCNNForClassification(BertPreTrainedModel):
         return out
 
     def forward(self, input_encoded):
-        outputs_bert = self.bert(input_encoded)
+        outputs_bert = self.bert(**input_encoded)
         output_sequence = outputs_bert[0]
         cnn_output = self.cell_textcnn(output_sequence)
         return cnn_output
