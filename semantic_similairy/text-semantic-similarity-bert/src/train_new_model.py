@@ -10,7 +10,7 @@ from transformers import BertForSequenceClassification
 from transformers import get_linear_schedule_with_warmup
 
 from dataset import SiameseDataset, CrossEncodeDataset
-from model import BertCNNForClassification
+from model import BertCNNForClassificationNew
 from engine import train_mse_fn, eval_mse_fn, train_fn, eval_fn
 #import config_nezha as config
 import config_albert as config
@@ -62,7 +62,7 @@ def run():
 
     # 初始化 BERT model
     config_bert = BertConfig.from_pretrained(config.model_path)
-    model = BertCNNForClassification(config_bert, config)
+    model = BertCNNForClassificationNew(config_bert, config)
 
     model = nn.DataParallel(model, device_ids=[0,1]).to(device)
     # 构造分组参数优化器    
