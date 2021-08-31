@@ -92,3 +92,36 @@ class BertCNNForClassification(BertPreTrainedModel):
         cnn_output = self.cell_textcnn(output_sequence)
         output = self.classifier(cnn_output)
         return output
+
+class BertCNNForClassificationNew(BertPreTrainedModel):
+    """
+    考虑将bert作为base模型，作为特征提取器，并且不改动参数，仅仅改动分类器的的参数。
+    """
+
+    def __init__(self, bert_config, config):
+        super(BertCNNForClassificationNew, self).__init__(bert_config)
+        self.bert = BertModel.from_pretrained(config.model_path)
+        for p in self.parameters():
+            p.requires_grad = False
+        self.convs = nn.ModuleList(
+            [
+               nn.Sequential(nn.Conv1d(config.hidden_size, config.feature_size, kernel_size=h),
+               nn.ReLU(), nn.MaxPool1d(config.max_seq_len - h + 1)) for h in config.window_sizes
+            ]
+        )
+        self.classifier = nn.Linear(config.feature_size * len(config.window_sizes), config.num_labels)
+    
+    def cell_textcnn(self, x_emb):
+        x_emb = x_emb.transpose(1, 2) # batch_size * hidden_size * max_seq
+        out = [conv1d(x_emb) for conv1d in self.convs] # batch_size * feature_size * 1
+        out = torch.cat(out, dim=1) # batch_size * feature_size * 1
+        # flatten the out
+        out = out.view(-1, out.size(1))
+        return out
+
+    def forward(self, input_encoded):
+        outputs_bert = self.bert(**input_encoded)
+        output_sequence = outputs_bert[0]
+        cnn_output = self.cell_textcnn(output_sequence)
+        output = self.classifier(cnn_output)
+        return output
