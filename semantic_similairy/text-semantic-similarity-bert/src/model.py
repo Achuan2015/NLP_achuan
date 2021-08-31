@@ -101,6 +101,8 @@ class BertCNNForClassificationNew(BertPreTrainedModel):
     def __init__(self, bert_config, config):
         super(BertCNNForClassificationNew, self).__init__(bert_config)
         self.bert = BertModel.from_pretrained(config.model_path)
+        # 除了下面这种遍历所有参数直接去掉记录梯度之外，还可以：（1）list(model.state_dict()) 列表查看，记录每一层对应的index；
+        # （2）enumerate(model.parameters()) 对应的index 的梯度记录给给取消了。如:for i,p in model.parameters(): if i < 165: p.requires_grad = False
         for p in self.parameters():
             p.requires_grad = False
         self.convs = nn.ModuleList(
