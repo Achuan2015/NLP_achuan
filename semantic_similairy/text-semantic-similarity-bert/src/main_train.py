@@ -94,6 +94,7 @@ def run():
             best_accuracy = eval_accu
             model.save_pretrained(config.output_path)
 
+
 def run_multi():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 

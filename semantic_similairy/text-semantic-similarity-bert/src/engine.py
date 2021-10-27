@@ -3,7 +3,6 @@ import torch
 from tqdm.auto import tqdm
 
 
-
 def cosine_loss_fn(q_emb, c_emb, label):
     # 因为 labels的取值是[0, 1], 而CosineEmbeddingLoss中要求label取值范围在[-1, 1]之间
     # y = 2 * label - 1
@@ -20,6 +19,7 @@ def mse_loss_fn(output, label):
 
 def convert2device(x, device):
     return {key:value.to(device) for key, value in x.items()}
+
 
 
 def train_cosine_fn(dataloader, model, device, optimizer, scheduler):
@@ -116,6 +116,17 @@ def train_fn(dataloader, model, device, optimizer, scheduler):
         train_loss += loss.item()
     train_loss = train_loss / len(dataloader)
     return train_loss
+
+def train_simCSE_fn(dataloader, model, device, optimizer, scheduler):
+    model.train()
+
+    train_loss = 0.0
+
+
+def eval_simCSE_fn(dataloader, model, device):
+    model.eval()
+    
+    eval_loss = 0.0
 
 def eval_fn(dataloader, model, device):
     model.eval()
