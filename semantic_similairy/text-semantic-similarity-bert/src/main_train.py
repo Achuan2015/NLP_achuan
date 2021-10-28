@@ -243,4 +243,5 @@ def run_second():
             model.module.save_pretrained(config.output_path)
 
 if __name__ == "__main__":
-    run_second()
+    run()
+    # run_second()

@@ -1,6 +1,7 @@
 import torch.nn as nn
 import torch
 from tqdm.auto import tqdm
+import torch.nn.functional as F
 
 
 def cosine_loss_fn(q_emb, c_emb, label):
@@ -20,7 +21,13 @@ def mse_loss_fn(output, label):
 def convert2device(x, device):
     return {key:value.to(device) for key, value in x.items()}
 
-
+def simCSE_loss_fn(pred, label, device, tau):
+    similairy = F.cosine_similarity(pred.unsqueeze(1), pred.unsqueeze(0), dim=2)
+    # 需要遮盖住 对角线的影响，也就是自己跟自己的cos_similarity值
+    similairy = similairy - torch.eye(pred.shape[0], device=device) * 1e12
+    similairy = similairy / tau
+    return F.cross_entropy(similairy, label)
+    
 
 def train_cosine_fn(dataloader, model, device, optimizer, scheduler):
     model.train()
@@ -121,6 +128,19 @@ def train_simCSE_fn(dataloader, model, device, optimizer, scheduler):
     model.train()
 
     train_loss = 0.0
+    for i, data in tqdm(enumerate(dataloader), total=len(dataloader)):
+        input, label = data
+        input = {key:val.to(device) for key, val in input.items()}
+        label = label.to(device)
+        optimizer.zero_grad()
+        output = model(input)
+        loss = simCSE_loss_fn(output, label, device, tau=0.05)
+        loss.backward()
+        optimizer.step()
+        scheduler.step()
+        train_loss +=  loss.item()
+    train_loss = train_loss / len(dataloader)
+    return train_loss
 
 
 def eval_simCSE_fn(dataloader, model, device):
