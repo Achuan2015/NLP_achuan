@@ -12,4 +12,4 @@ num_labels=1
 learning_rate=2e-5
 model_path="input/bert-base-chinese/"
 tokenizer = BertTokenizer.from_pretrained(model_path)
-output_path="output/bert-base-chinese"
+output_path="output/bert-base-chinese-simcse"

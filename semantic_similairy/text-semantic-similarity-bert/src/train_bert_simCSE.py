@@ -10,10 +10,12 @@ from transformers import BertConfig
 from transformers import get_linear_schedule_with_warmup
 import numpy as np
 import csv
+import pandas as pd
+from sklearn import model_selection
 
 from dataset import SimCSEDataset
 from dataset import collate_simCSE
-from engine import train_simCSE_fn
+from engine import train_simCSE_fn, eval_simCSE_fn
 from model import BertForPoolingNetwork
 import config
 
@@ -29,11 +31,32 @@ torch.cuda.manual_seed_all(seed_val)
 def run():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     path_train = "../data/question_total.csv"
+    path_test = "../data/50_kmeans_train_data.csv"
     corpus = []
     with open(path_train, 'r') as f:
         files = csv.DictReader(f, delimiter='\t')
         for item in files:
             corpus.append(item['question'])
+    dfs = pd.read_csv(path_test, sep="\t")
+    dfs = dfs[dfs['label'] == 1]
+    _, df_valid = model_selection.train_test_split(
+        dfs,
+        test_size=0.2,
+        random_state=42,
+        stratify=dfs.label.values
+    )
+
+    dataset_valid = SimCSEDataset(
+        sents1=df_valid['query'].values,
+        sents2=df_valid['candidate'].values,
+    )
+
+    dataloader_valid = DataLoader(
+        dataset_valid,
+        batch_size=config.batch_size,
+        shuffle=True,
+        collate_fn=collate_simCSE
+    )
     # 生成训练集
     dataset_train = SimCSEDataset(
         sents1=corpus,
@@ -75,11 +98,11 @@ def run():
     best_accuracy = 0.9
     for epoch in range(config.epochs):
         train_loss = train_simCSE_fn(dataloader_train, model, device, optimizer, scheduler)
-        # eval_loss, eval_accu = eval_simCSE_fn(dataloader_eval, model, device)
-        print(f'epoch:{epoch+1} | train_loss:{train_loss}')
-        # if eval_accu > best_accuracy:
-        #     best_accuracy = eval_accu
-        #     model.save_pretrained(config.output_path)
+        eval_loss, eval_accu = eval_simCSE_fn(dataloader_valid, model, device)
+        print(f'epoch:{epoch+1} | train_loss:{train_loss} | eval_loss:{eval_loss} | eval_accu: {eval_accu}')
+        if eval_accu > best_accuracy:
+            best_accuracy = eval_accu
+            model.save_pretrained(config.output_path)
 
 
 if __name__ == '__main__':

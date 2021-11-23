@@ -124,6 +124,7 @@ def train_fn(dataloader, model, device, optimizer, scheduler):
     train_loss = train_loss / len(dataloader)
     return train_loss
 
+
 def train_simCSE_fn(dataloader, model, device, optimizer, scheduler):
     model.train()
 
@@ -145,8 +146,27 @@ def train_simCSE_fn(dataloader, model, device, optimizer, scheduler):
 
 def eval_simCSE_fn(dataloader, model, device):
     model.eval()
-    
-    eval_loss = 0.0
+    threshold = 0.7
+
+    eval_accu = 0
+    eval_loss = 0
+    with torch.no_grad():
+        for i, data in tqdm(enumerate(dataloader), total=len(dataloader)):
+            input, label = data
+            input = {key:val.to(device) for key, val in input.items()}
+            label = label.to(device)
+            output = model(input)
+            loss = simCSE_loss_fn(output, label, device, tau=0.05)
+            similarity = F.cosine_similarity(output.unsqueeze(1), output.unsqueeze(0), dim=2)
+            similarity = similarity - torch.eye(output.shape[0], device=device) * 1e12   
+            y_pred = similarity.argmax(dim=-1).long()
+            accuracy = torch.sum(y_pred == label.view(-1))/ similarity.size(0)
+            eval_accu += accuracy
+            eval_loss += loss.item()
+    eval_accu = eval_accu / len(dataloader)
+    eval_loss = eval_loss / len(dataloader)
+    return eval_loss, eval_accu
+            
 
 def eval_fn(dataloader, model, device):
     model.eval()

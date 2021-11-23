@@ -4,14 +4,14 @@ import config
 
 
 def collate_simCSE(data):
-    input_encoded = {'input_ids':[], 'token_type_ids': [], 'attention_mask': []}
+    input_encoded = {'input_ids': [], 'token_type_ids': [], 'attention_mask': []}
     for i in data:
-        input_encoded['input_ids'].append(i['input_ids'])
-        input_encoded['token_type_ids'].append(i['token_type_ids'])
-        input_encoded['attention_mask'].append(i['attention_mask'])
-    ids = torch.arange(len(input_encoded['input_ids']))
+        input_encoded['input_ids'].append(i[0]['input_ids']); input_encoded['input_ids'].append(i[1]['input_ids']); 
+        input_encoded['token_type_ids'].append(i[0]['token_type_ids']); input_encoded['token_type_ids'].append(i[1]['token_type_ids'])
+        input_encoded['attention_mask'].append(i[0]['attention_mask']); input_encoded['attention_mask'].append(i[1]['attention_mask'])
+    input_encoded = {key: torch.LongTensor(val) for key, val in input_encoded.items()}
+    ids = torch.arange(input_encoded['input_ids'].shape[0])
     labels = ids + 1 - ids % 2 * 2
-    input_encoded = {key: torch.LongTensor(torch.stack(val, 0)) for key, val in input_encoded.items()}
     return input_encoded, torch.LongTensor(labels)
 
 class SiameseDataset(Dataset):
@@ -33,6 +33,7 @@ class SiameseDataset(Dataset):
             padding="max_length",
             truncation="longest_first"
         )
+
         candidate_encoded = config.tokenizer.encode_plus(
             candidate,
             add_special_tokens=True,
@@ -59,15 +60,21 @@ class SimCSEDataset(Dataset):
     def __getitem__(self, idx):
         sent1 = self.sents1[idx]
         sent2 = self.sents2[idx]
-        input_encoded = config.tokenizer.encode_plus(
-            sent1, sent2,
+        input1_encoded = config.tokenizer.encode_plus(
+            sent1,
             add_special_tokens=True,
             max_length=config.max_seq_len,
             padding="max_length",
             truncation="longest_first"
         )
-        input_encoded = {key:torch.LongTensor(val) for key, val in input_encoded.items()}
-        return input_encoded
+        input2_encoded = config.tokenizer.encode_plus(
+            sent2,
+            add_special_tokens=True,
+            max_length=config.max_seq_len,
+            padding="max_length",
+            truncation="longest_first"
+        )
+        return input1_encoded, input2_encoded
     
     def __len__(self):
         return len(self.sents1)
