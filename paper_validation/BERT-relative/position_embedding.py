@@ -8,7 +8,7 @@ import numpy as np
 '''
 
 
-def get_position_encoding(max_seq_len, embed_dim):
+def get_positional_encoding(max_seq_len, embed_dim):
     # 初始化一个position encodding
     # 第一步通过 pos 占据位置
     # PE(pos, 2i) = sim(pos * (1 / 10000^2i/dim)
@@ -22,5 +22,19 @@ def get_position_encoding(max_seq_len, embed_dim):
     position_encoding[1:, 1::2] = np.cos(position_encoding[1:, 1::2])     # dim 是 2i + 1 奇数 
     return position_encoding
 
-position_encoding = get_position_encoding(5, 10)
-print(position_encoding)
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+positional_encoding = get_positional_encoding(max_seq_len=100, embed_dim=16)
+plt.figure(figsize=(10,10))
+sns.heatmap(positional_encoding)
+plt.title("Sinusoidal Function")
+plt.xlabel("hidden dimension")
+plt.ylabel("sequence length")
+
+'''
+热力图:
+    可见随着 embedding_dimension​序号增大，位置嵌入函数的周期变化越来越平缓
+'''
